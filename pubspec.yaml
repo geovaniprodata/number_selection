@@ -1,13 +1,13 @@
 name: number_selection
-description: Cool number picker concept
+description: Custom Number Picker
 version: 1.0.0
-author: Ali Rajab nezhad <alirn76@yahoo.com>
-homepage: https://github.com/AliRn76/number_selection
+homepage: https://github.com/geovaniprodata/number_selection
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
+  awesome_dialog: ^3.2.1
   flutter:
     sdk: flutter
   get: ^4.6.6

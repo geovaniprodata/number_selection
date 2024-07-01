@@ -1,7 +1,10 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:number_selection/library.dart';
 
 /// the concept of the widget inspired
 /// from [Nikolay Kuchkarov](https://dribbble.com/shots/3368130-Stepper-Touch).
@@ -19,8 +22,12 @@ class NumberSelection extends StatefulWidget {
       this.maxValue = 100,
       this.minValue = -100,
       this.manualSet,
+      this.modalName = 'NUMBER',
       this.theme})
       : super(key: key);
+
+  /// Title name to Modal
+  final String modalName;
 
   /// Manually set the value of the stepper based on Listenables/Notifiers
   /// It'll be either [ValueListenable] or [RxValue]
@@ -164,6 +171,8 @@ class _NumberSelectionState extends State<NumberSelection> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+
     return FittedBox(
       child: Container(
         width: _isHorizontal ? 280.0 : 120.0,
@@ -200,26 +209,144 @@ class _NumberSelectionState extends State<NumberSelection> with TickerProviderSt
                   onPressed: () => _changeValue(adding: true, fromButtons: true),
                 ),
               ),
-              GestureDetector(
-                onHorizontalDragStart: _onPanStart,
-                onHorizontalDragUpdate: _onPanUpdate,
-                onHorizontalDragEnd: _onPanEnd,
-                child: SlideTransition(
-                  position: _animation as Animation<Offset>,
-                  child: Material(
-                    color: _theme.draggableCircleColor,
-                    shape: const CircleBorder(),
-                    elevation: 5.0,
-                    child: Center(
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 500),
-                        transitionBuilder: (Widget child, Animation<double> animation) {
-                          return ScaleTransition(child: child, scale: animation);
-                        },
-                        child: Text(
-                          '$_value',
-                          key: ValueKey<int>(_value),
-                          style: TextStyle(color: _theme.numberColor, fontSize: 56.0),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onHorizontalDragStart: _onPanStart,
+                  onHorizontalDragUpdate: _onPanUpdate,
+                  onHorizontalDragEnd: _onPanEnd,
+                  onDoubleTap: () async {
+                    var qtdController = TextEditingController();
+
+                    await Awesome.custom(
+                      context,
+                      'VERSÃO FIX',
+                      'INSERÇÃO MANUAL',
+                      type: DialogType.noHeader,
+                      content: SizedBox(
+                        width: size.width * 0.64,
+                        height: size.height * 0.12,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Wrap(
+                            runSpacing: 10,
+                            children: [
+                              ValueListenableBuilder(
+                                  valueListenable: qtdController,
+                                  builder: (context, qtd, child) {
+                                    return TextField(
+                                      controller: qtdController,
+                                      onTap: () {},
+                                      onChanged: (text) {},
+                                      maxLength: 4,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      decoration: InputDecoration(
+                                        counterStyle: null,
+                                        labelStyle: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 14,
+                                        ),
+                                        floatingLabelAlignment: FloatingLabelAlignment.center,
+                                        floatingLabelStyle: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w800,
+                                          color: Colors.black,
+                                        ),
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        labelText: 'VERSÃO FIX',
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                        suffixIconConstraints: BoxConstraints.loose(Size(50, 50)),
+                                        suffixIcon: qtdController.text.isNotEmpty
+                                            ? IconButton(
+                                                iconSize: 32,
+                                                style: ButtonStyle(
+                                                    elevation: const WidgetStatePropertyAll(4),
+                                                    overlayColor: WidgetStatePropertyAll(Theme.of(context).primaryColor),
+                                                    shape: WidgetStatePropertyAll(
+                                                      RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(16),
+                                                      ),
+                                                    ),
+                                                    side: WidgetStatePropertyAll(BorderSide(
+                                                      color: Theme.of(context).primaryColor,
+                                                      style: BorderStyle.none,
+                                                    ))),
+                                                onPressed: () {
+                                                  qtdController.clear();
+                                                },
+                                                icon: Icon(
+                                                  Icons.clear,
+                                                  color: Theme.of(context).primaryColor,
+                                                ),
+                                              )
+                                            : const SizedBox.shrink(),
+                                        focusedBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            width: 2,
+                                          ),
+                                        ),
+                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+                                      ),
+                                      textAlign: TextAlign.left,
+                                      textAlignVertical: TextAlignVertical.center,
+                                      textCapitalization: TextCapitalization.sentences,
+                                    );
+                                  }),
+                            ],
+                          ),
+                        ),
+                      ),
+                      textoPerguntaNegativo: 'SAIR',
+                      textoPerguntaPositivo: 'CONFIRMAR',
+                      corPositivo: Colors.green.shade700,
+                      corNegativo: Colors.red.shade900,
+                      callBackFunctionPositivo: () async {
+                        var qtd = int.tryParse(qtdController.text);
+
+                        if (qtd != null) {
+                          setState(() {
+                            _value = qtd;
+                          });
+
+                          if (widget.onChanged != null) widget.onChanged!(_value);
+                        } else {
+                          throw Exception('Não foi possível converter [STRING] => [INTEGER]');
+                        }
+                      },
+                      width: size.width * .8,
+                      dismissable: false,
+                    );
+                  },
+                  child: SlideTransition(
+                    position: _animation as Animation<Offset>,
+                    child: Material(
+                      color: _theme.draggableCircleColor,
+                      shape: const CircleBorder(),
+                      elevation: 5.0,
+                      child: Center(
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 500),
+                          transitionBuilder: (Widget child, Animation<double> animation) {
+                            return ScaleTransition(child: child, scale: animation);
+                          },
+                          child: Text(
+                            '$_value',
+                            key: ValueKey<int>(_value),
+                            style: TextStyle(color: _theme.numberColor, fontSize: 56.0),
+                          ),
                         ),
                       ),
                     ),
