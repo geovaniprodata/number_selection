@@ -262,7 +262,7 @@ class _NumberSelectionState extends State<NumberSelection> with TickerProviderSt
                                         ),
                                         filled: true,
                                         fillColor: Colors.white,
-                                        labelText: 'VERSÃO FIX',
+                                        labelText: widget.modalName,
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
                                             color: Theme.of(context).primaryColor,
