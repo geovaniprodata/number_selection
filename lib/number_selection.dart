@@ -209,144 +209,142 @@ class _NumberSelectionState extends State<NumberSelection> with TickerProviderSt
                   onPressed: () => _changeValue(adding: true, fromButtons: true),
                 ),
               ),
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onHorizontalDragStart: _onPanStart,
-                  onHorizontalDragUpdate: _onPanUpdate,
-                  onHorizontalDragEnd: _onPanEnd,
-                  onDoubleTap: () async {
-                    var qtdController = TextEditingController();
+              GestureDetector(
+                onHorizontalDragStart: _onPanStart,
+                onHorizontalDragUpdate: _onPanUpdate,
+                onHorizontalDragEnd: _onPanEnd,
+                // onDoubleTap: () async {
+                //   var qtdController = TextEditingController();
 
-                    await Awesome.custom(
-                      context,
-                      'VERSÃO FIX',
-                      'INSERÇÃO MANUAL',
-                      type: DialogType.noHeader,
-                      content: SizedBox(
-                        width: size.width * 0.64,
-                        height: size.height * 0.12,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Wrap(
-                            runSpacing: 10,
-                            children: [
-                              ValueListenableBuilder(
-                                  valueListenable: qtdController,
-                                  builder: (context, qtd, child) {
-                                    return TextField(
-                                      controller: qtdController,
-                                      onTap: () {},
-                                      onChanged: (text) {},
-                                      maxLength: 4,
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly,
-                                      ],
-                                      decoration: InputDecoration(
-                                        counterStyle: null,
-                                        labelStyle: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 14,
-                                        ),
-                                        floatingLabelAlignment: FloatingLabelAlignment.center,
-                                        floatingLabelStyle: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w800,
-                                          color: Colors.black,
-                                        ),
-                                        filled: true,
-                                        fillColor: Colors.white,
-                                        labelText: widget.modalName,
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: Theme.of(context).primaryColor,
-                                          ),
-                                        ),
-                                        suffixIconConstraints: BoxConstraints.loose(Size(50, 50)),
-                                        suffixIcon: qtdController.text.isNotEmpty
-                                            ? IconButton(
-                                                iconSize: 32,
-                                                style: ButtonStyle(
-                                                    elevation: const WidgetStatePropertyAll(4),
-                                                    overlayColor: WidgetStatePropertyAll(Theme.of(context).primaryColor),
-                                                    shape: WidgetStatePropertyAll(
-                                                      RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(16),
-                                                      ),
-                                                    ),
-                                                    side: WidgetStatePropertyAll(BorderSide(
-                                                      color: Theme.of(context).primaryColor,
-                                                      style: BorderStyle.none,
-                                                    ))),
-                                                onPressed: () {
-                                                  qtdController.clear();
-                                                },
-                                                icon: Icon(
-                                                  Icons.clear,
-                                                  color: Theme.of(context).primaryColor,
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        focusedBorder: const OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            width: 2,
-                                          ),
-                                        ),
-                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
-                                      ),
-                                      textAlign: TextAlign.left,
-                                      textAlignVertical: TextAlignVertical.center,
-                                      textCapitalization: TextCapitalization.sentences,
-                                    );
-                                  }),
-                            ],
-                          ),
-                        ),
-                      ),
-                      textoPerguntaNegativo: 'SAIR',
-                      textoPerguntaPositivo: 'CONFIRMAR',
-                      corPositivo: Colors.green.shade700,
-                      corNegativo: Colors.red.shade900,
-                      callBackFunctionPositivo: () async {
-                        var qtd = int.tryParse(qtdController.text);
+                //   await Awesome.custom(
+                //     context,
+                //     widget.modalName,
+                //     'INSERÇÃO MANUAL',
+                //     type: DialogType.noHeader,
+                //     content: SizedBox(
+                //       width: size.width * 0.64,
+                //       height: size.height * 0.12,
+                //       child: Padding(
+                //         padding: EdgeInsets.symmetric(vertical: 10),
+                //         child: Wrap(
+                //           runSpacing: 10,
+                //           children: [
+                //             ValueListenableBuilder(
+                //                 valueListenable: qtdController,
+                //                 builder: (context, qtd, child) {
+                //                   return TextField(
+                //                     controller: qtdController,
+                //                     onTap: () {},
+                //                     onChanged: (text) {},
+                //                     maxLength: 4,
+                //                     style: const TextStyle(
+                //                       color: Colors.black,
+                //                       fontSize: 16,
+                //                       fontWeight: FontWeight.w800,
+                //                     ),
+                //                     keyboardType: TextInputType.number,
+                //                     inputFormatters: [
+                //                       FilteringTextInputFormatter.digitsOnly,
+                //                     ],
+                //                     decoration: InputDecoration(
+                //                       counterStyle: null,
+                //                       labelStyle: TextStyle(
+                //                         color: Colors.black,
+                //                         fontSize: 14,
+                //                       ),
+                //                       floatingLabelAlignment: FloatingLabelAlignment.center,
+                //                       floatingLabelStyle: TextStyle(
+                //                         fontSize: 20,
+                //                         fontWeight: FontWeight.w800,
+                //                         color: Colors.black,
+                //                       ),
+                //                       filled: true,
+                //                       fillColor: Colors.white,
+                //                       labelText: widget.modalName,
+                //                       enabledBorder: OutlineInputBorder(
+                //                         borderSide: BorderSide(
+                //                           color: Theme.of(context).primaryColor,
+                //                         ),
+                //                       ),
+                //                       suffixIconConstraints: BoxConstraints.loose(Size(50, 50)),
+                //                       suffixIcon: qtdController.text.isNotEmpty
+                //                           ? IconButton(
+                //                               iconSize: 32,
+                //                               style: ButtonStyle(
+                //                                   elevation: const WidgetStatePropertyAll(4),
+                //                                   overlayColor: WidgetStatePropertyAll(Theme.of(context).primaryColor),
+                //                                   shape: WidgetStatePropertyAll(
+                //                                     RoundedRectangleBorder(
+                //                                       borderRadius: BorderRadius.circular(16),
+                //                                     ),
+                //                                   ),
+                //                                   side: WidgetStatePropertyAll(BorderSide(
+                //                                     color: Theme.of(context).primaryColor,
+                //                                     style: BorderStyle.none,
+                //                                   ))),
+                //                               onPressed: () {
+                //                                 qtdController.clear();
+                //                               },
+                //                               icon: Icon(
+                //                                 Icons.clear,
+                //                                 color: Theme.of(context).primaryColor,
+                //                               ),
+                //                             )
+                //                           : const SizedBox.shrink(),
+                //                       focusedBorder: const OutlineInputBorder(
+                //                         borderSide: BorderSide(
+                //                           width: 2,
+                //                         ),
+                //                       ),
+                //                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+                //                     ),
+                //                     textAlign: TextAlign.left,
+                //                     textAlignVertical: TextAlignVertical.center,
+                //                     textCapitalization: TextCapitalization.sentences,
+                //                   );
+                //                 }),
+                //           ],
+                //         ),
+                //       ),
+                //     ),
+                //     textoPerguntaNegativo: 'SAIR',
+                //     textoPerguntaPositivo: 'CONFIRMAR',
+                //     corPositivo: Colors.green.shade700,
+                //     corNegativo: Colors.red.shade900,
+                //     callBackFunctionPositivo: () {
+                //       var qtd = int.tryParse(qtdController.text);
 
-                        if (qtd != null) {
-                          setState(() {
-                            _value = qtd;
-                          });
+                //       if (qtd != null) {
+                //         setState(() {
+                //           _value = qtd;
+                //         });
 
-                          if (widget.onChanged != null) widget.onChanged!(_value);
-                        } else {
-                          throw Exception('Não foi possível converter [STRING] => [INTEGER]');
-                        }
-                      },
-                      width: size.width * .8,
-                      dismissable: false,
-                    );
-                  },
-                  child: SlideTransition(
-                    position: _animation as Animation<Offset>,
-                    child: Material(
-                      color: _theme.draggableCircleColor,
-                      shape: const CircleBorder(),
-                      elevation: 5.0,
-                      child: Center(
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 500),
-                          transitionBuilder: (Widget child, Animation<double> animation) {
-                            return ScaleTransition(child: child, scale: animation);
-                          },
-                          child: Text(
-                            '$_value',
-                            key: ValueKey<int>(_value),
-                            style: TextStyle(color: _theme.numberColor, fontSize: 56.0),
-                          ),
+                //         if (widget.onChanged != null) widget.onChanged!(_value);
+                //       } else {
+                //         throw Exception('Não foi possível converter [STRING] => [INTEGER]');
+                //       }
+                //     },
+                //     width: size.width * .8,
+                //     dismissable: false,
+                //   );
+                // },
+
+                child: SlideTransition(
+                  position: _animation as Animation<Offset>,
+                  child: Material(
+                    color: _theme.draggableCircleColor,
+                    shape: const CircleBorder(),
+                    elevation: 5.0,
+                    child: Center(
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 500),
+                        transitionBuilder: (Widget child, Animation<double> animation) {
+                          return ScaleTransition(child: child, scale: animation);
+                        },
+                        child: Text(
+                          '$_value',
+                          key: ValueKey<int>(_value),
+                          style: TextStyle(color: _theme.numberColor, fontSize: 56.0),
                         ),
                       ),
                     ),
