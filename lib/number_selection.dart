@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 
@@ -16,8 +17,12 @@ class NumberSelection extends StatefulWidget {
       this.withSpring = true,
       this.maxValue = 100,
       this.minValue = -100,
+      this.manualSet,
       this.theme})
       : super(key: key);
+
+  /// Manually set the value of the stepper based on Listenables/Notifiers
+  final ValueListenable<int>? manualSet;
 
   /// the orientation of the stepper its horizontal or vertical.
   final Axis direction;
@@ -70,18 +75,12 @@ class NumberSelection extends StatefulWidget {
   _NumberSelectionState createState() => _NumberSelectionState();
 }
 
-class _NumberSelectionState extends State<NumberSelection>
-    with TickerProviderStateMixin {
+class _NumberSelectionState extends State<NumberSelection> with TickerProviderStateMixin {
   late bool _isHorizontal = widget.direction == Axis.horizontal;
-  late AnimationController _controller = AnimationController(
-      vsync: this, lowerBound: -0.5, upperBound: 0.5, value: 0);
+  late AnimationController _controller = AnimationController(vsync: this, lowerBound: -0.5, upperBound: 0.5, value: 0);
   late Animation _animation = _isHorizontal
-      ? _animation =
-          Tween<Offset>(begin: Offset(0.0, 0.0), end: Offset(1.5, 0.0))
-              .animate(_controller)
-      : _animation =
-          Tween<Offset>(begin: Offset(0.0, 0.0), end: Offset(0.0, 1.5))
-              .animate(_controller);
+      ? _animation = Tween<Offset>(begin: Offset(0.0, 0.0), end: Offset(1.5, 0.0)).animate(_controller)
+      : _animation = Tween<Offset>(begin: Offset(0.0, 0.0), end: Offset(0.0, 1.5)).animate(_controller);
   late int _value = widget.initialValue ?? 0;
   late double _startAnimationPosX;
   late double _startAnimationPosY;
@@ -89,22 +88,24 @@ class _NumberSelectionState extends State<NumberSelection>
   late double _startAnimationOutOfConstraintsPosX;
   late double _startAnimationOutOfConstraintsPosY;
 
-  late AnimationController _backgroundColorController = AnimationController(
-      vsync: this, duration: Duration(milliseconds: 350), value: 0)
+  late AnimationController _backgroundColorController = AnimationController(vsync: this, duration: Duration(milliseconds: 350), value: 0)
     ..addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         _backgroundColorController.animateTo(0, curve: Curves.easeIn);
       }
     });
   final ColorTween _backgroundColorTween = ColorTween();
-  late Animation<Color?> _backgroundColor = _backgroundColorController.drive(
-      _backgroundColorTween.chain(CurveTween(curve: Curves.fastOutSlowIn)));
+  late Animation<Color?> _backgroundColor = _backgroundColorController.drive(_backgroundColorTween.chain(CurveTween(curve: Curves.fastOutSlowIn)));
 
   late NumberSelectionTheme _theme;
 
   @override
   void initState() {
     super.initState();
+
+    if (widget.manualSet != null) {
+      widget.manualSet?.addListener(() => setState(() => _value = widget.manualSet!.value));
+    }
   }
 
   @override
@@ -136,16 +137,11 @@ class _NumberSelectionState extends State<NumberSelection>
   void _getTheme() {
     if (widget.theme != null)
       _theme = NumberSelectionTheme(
-          draggableCircleColor: widget.theme!.draggableCircleColor ??
-              Theme.of(context).canvasColor,
-          numberColor: widget.theme!.numberColor ??
-              Theme.of(context).colorScheme.secondary,
-          iconsColor: widget.theme!.iconsColor ??
-              Theme.of(context).colorScheme.secondary,
-          backgroundColor: widget.theme!.backgroundColor ??
-              Theme.of(context).primaryColor.withOpacity(0.7),
-          outOfConstraintsColor:
-              widget.theme!.outOfConstraintsColor ?? Colors.red);
+          draggableCircleColor: widget.theme!.draggableCircleColor ?? Theme.of(context).canvasColor,
+          numberColor: widget.theme!.numberColor ?? Theme.of(context).colorScheme.secondary,
+          iconsColor: widget.theme!.iconsColor ?? Theme.of(context).colorScheme.secondary,
+          backgroundColor: widget.theme!.backgroundColor ?? Theme.of(context).primaryColor.withOpacity(0.7),
+          outOfConstraintsColor: widget.theme!.outOfConstraintsColor ?? Colors.red);
     else
       _theme = NumberSelectionTheme(
         draggableCircleColor: Theme.of(context).canvasColor,
@@ -181,8 +177,7 @@ class _NumberSelectionState extends State<NumberSelection>
                 top: _isHorizontal ? 0 : null,
                 child: IconButton(
                   icon: Icon(Icons.remove, size: 40, color: _theme.iconsColor),
-                  onPressed: () =>
-                      _changeValue(adding: false, fromButtons: true),
+                  onPressed: () => _changeValue(adding: false, fromButtons: true),
                 ),
               ),
               Positioned(
@@ -192,8 +187,7 @@ class _NumberSelectionState extends State<NumberSelection>
                 bottom: _isHorizontal ? 0 : null,
                 child: IconButton(
                   icon: Icon(Icons.add, size: 40, color: _theme.iconsColor),
-                  onPressed: () =>
-                      _changeValue(adding: true, fromButtons: true),
+                  onPressed: () => _changeValue(adding: true, fromButtons: true),
                 ),
               ),
               GestureDetector(
@@ -209,16 +203,13 @@ class _NumberSelectionState extends State<NumberSelection>
                     child: Center(
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 500),
-                        transitionBuilder:
-                            (Widget child, Animation<double> animation) {
-                          return ScaleTransition(
-                              child: child, scale: animation);
+                        transitionBuilder: (Widget child, Animation<double> animation) {
+                          return ScaleTransition(child: child, scale: animation);
                         },
                         child: Text(
                           '$_value',
                           key: ValueKey<int>(_value),
-                          style: TextStyle(
-                              color: _theme.numberColor, fontSize: 56.0),
+                          style: TextStyle(color: _theme.numberColor, fontSize: 56.0),
                         ),
                       ),
                     ),
@@ -238,10 +229,8 @@ class _NumberSelectionState extends State<NumberSelection>
     _startAnimationPosX = ((local.dx * 0.75) / box.size.width) - 0.4;
     _startAnimationPosY = ((local.dy * 0.75) / box.size.height) - 0.4;
 
-    _startAnimationOutOfConstraintsPosX =
-        ((local.dx * 0.25) / box.size.width) - 0.4;
-    _startAnimationOutOfConstraintsPosY =
-        ((local.dy * 0.25) / box.size.height) - 0.4;
+    _startAnimationOutOfConstraintsPosX = ((local.dx * 0.25) / box.size.width) - 0.4;
+    _startAnimationOutOfConstraintsPosY = ((local.dy * 0.25) / box.size.height) - 0.4;
 
     if (_isHorizontal) {
       return ((local.dx * 0.75) / box.size.width) - 0.4;
@@ -272,8 +261,7 @@ class _NumberSelectionState extends State<NumberSelection>
   void _changeValue({required bool adding, bool fromButtons = false}) async {
     if (fromButtons) {
       _startAnimationPosX = _startAnimationPosY = adding ? 0.5 : -0.5;
-      _startAnimationOutOfConstraintsPosX =
-          _startAnimationOutOfConstraintsPosY = adding ? 0.25 : 0.25;
+      _startAnimationOutOfConstraintsPosX = _startAnimationOutOfConstraintsPosY = adding ? 0.25 : 0.25;
     }
 
     bool valueOutOfConstraints = false;
@@ -285,43 +273,25 @@ class _NumberSelectionState extends State<NumberSelection>
       valueOutOfConstraints = true;
 
     if (widget.withSpring) {
-      final SpringDescription _kDefaultSpring =
-          new SpringDescription.withDampingRatio(
-        mass: valueOutOfConstraints && widget.enableOnOutOfConstraintsAnimation
-            ? 0.4
-            : 0.9,
-        stiffness:
-            valueOutOfConstraints && widget.enableOnOutOfConstraintsAnimation
-                ? 1000
-                : 250.0,
+      final SpringDescription _kDefaultSpring = new SpringDescription.withDampingRatio(
+        mass: valueOutOfConstraints && widget.enableOnOutOfConstraintsAnimation ? 0.4 : 0.9,
+        stiffness: valueOutOfConstraints && widget.enableOnOutOfConstraintsAnimation ? 1000 : 250.0,
         ratio: 0.6,
       );
       if (_isHorizontal) {
-        _controller.animateWith(SpringSimulation(
-            _kDefaultSpring,
-            valueOutOfConstraints && widget.enableOnOutOfConstraintsAnimation
-                ? _startAnimationOutOfConstraintsPosX
-                : _startAnimationPosX,
-            0.0,
-            0.0));
+        _controller.animateWith(SpringSimulation(_kDefaultSpring,
+            valueOutOfConstraints && widget.enableOnOutOfConstraintsAnimation ? _startAnimationOutOfConstraintsPosX : _startAnimationPosX, 0.0, 0.0));
       } else {
-        _controller.animateWith(SpringSimulation(
-            _kDefaultSpring,
-            valueOutOfConstraints && widget.enableOnOutOfConstraintsAnimation
-                ? _startAnimationOutOfConstraintsPosY
-                : _startAnimationPosY,
-            0.0,
-            0.0));
+        _controller.animateWith(SpringSimulation(_kDefaultSpring,
+            valueOutOfConstraints && widget.enableOnOutOfConstraintsAnimation ? _startAnimationOutOfConstraintsPosY : _startAnimationPosY, 0.0, 0.0));
       }
     } else {
-      _controller.animateTo(0.0,
-          curve: Curves.bounceOut, duration: Duration(milliseconds: 500));
+      _controller.animateTo(0.0, curve: Curves.bounceOut, duration: Duration(milliseconds: 500));
     }
 
     if (valueOutOfConstraints) {
       if (widget.onOutOfConstraints != null) widget.onOutOfConstraints!();
-      if (widget.enableOnOutOfConstraintsAnimation)
-        _backgroundColorController.forward();
+      if (widget.enableOnOutOfConstraintsAnimation) _backgroundColorController.forward();
     } else if (widget.onChanged != null) widget.onChanged!(_value);
   }
 }
@@ -333,10 +303,5 @@ class NumberSelectionTheme {
   Color? backgroundColor;
   Color? outOfConstraintsColor;
 
-  NumberSelectionTheme(
-      {this.draggableCircleColor,
-      this.numberColor,
-      this.iconsColor,
-      this.backgroundColor,
-      this.outOfConstraintsColor});
+  NumberSelectionTheme({this.draggableCircleColor, this.numberColor, this.iconsColor, this.backgroundColor, this.outOfConstraintsColor});
 }
