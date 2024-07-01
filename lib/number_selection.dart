@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
+import 'package:get/get.dart';
 
 /// the concept of the widget inspired
 /// from [Nikolay Kuchkarov](https://dribbble.com/shots/3368130-Stepper-Touch).
@@ -22,7 +23,8 @@ class NumberSelection extends StatefulWidget {
       : super(key: key);
 
   /// Manually set the value of the stepper based on Listenables/Notifiers
-  final ValueListenable<int>? manualSet;
+  /// It'll be either [ValueListenable] or [RxValue]
+  final dynamic manualSet;
 
   /// the orientation of the stepper its horizontal or vertical.
   final Axis direction;
@@ -104,7 +106,15 @@ class _NumberSelectionState extends State<NumberSelection> with TickerProviderSt
     super.initState();
 
     if (widget.manualSet != null) {
-      widget.manualSet?.addListener(() => setState(() => _value = widget.manualSet!.value));
+      if (widget.manualSet is ValueListenable) {
+        var manual = (widget.manualSet as ValueListenable<int>?);
+        manual?.addListener(() => setState(() => _value = manual.value));
+      }
+
+      if (widget.manualSet is RxInt) {
+        var manual = (widget.manualSet as RxInt?);
+        manual?.subject.listen((event) => () => setState(() => _value = manual.value));
+      }
     }
   }
 
