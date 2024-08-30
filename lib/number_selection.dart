@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +25,19 @@ class NumberSelection extends StatefulWidget {
       this.minValue = -100,
       this.manualSet,
       this.modalName = 'NUMBER',
+      this.modalDescription = 'MANUAL INPUT',
+      this.width,
       this.theme})
       : super(key: key);
 
+  /// Width size of Modal
+  final double? width;
+
   /// Title name to Modal
   final String modalName;
+
+  /// Description to Modal
+  final String modalDescription;
 
   /// Manually set the value of the stepper based on Listenables/Notifiers
   /// It'll be either [ValueListenable] or [RxValue]
@@ -180,10 +190,10 @@ class _NumberSelectionState extends State<NumberSelection> with TickerProviderSt
         await Awesome.custom(
           context,
           widget.modalName,
-          'INSERÇÃO MANUAL',
+          widget.modalDescription,
           type: DialogType.noHeader,
           content: SizedBox(
-            width: size.width * 0.64,
+            width: widget.width ?? size.width * (Platform.isAndroid ? .8 : .45),
             height: size.height * 0.12,
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 10),
