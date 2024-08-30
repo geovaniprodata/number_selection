@@ -9,7 +9,7 @@ class Awesome {
     Widget? content,
     DialogType type = DialogType.info,
     bool dismissable = false,
-    double? width,
+    required double width,
     AnimType? animType,
     Function()? callBackFunctionPositivo,
     Function()? callBackFunctionNegativo,
@@ -19,9 +19,6 @@ class Awesome {
     String? textoPerguntaNegativo,
     bool isDark = true,
   }) {
-    var size = MediaQuery.of(context).size;
-    width = width ?? size.width * .4;
-
     return AwesomeDialog(
       context: context,
       dialogType: type,

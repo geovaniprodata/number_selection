@@ -190,11 +190,11 @@ class _NumberSelectionState extends State<NumberSelection> with TickerProviderSt
 
         await Awesome.custom(
           context,
+          width: widget.width ?? size.width * (Platform.isAndroid ? .8 : .45),
           widget.modalName,
           widget.modalDescription,
           type: DialogType.noHeader,
           content: SizedBox(
-            width: widget.width ?? size.width * (Platform.isAndroid ? .8 : .45),
             height: size.height * 0.12,
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 10),
@@ -296,7 +296,6 @@ class _NumberSelectionState extends State<NumberSelection> with TickerProviderSt
               throw Exception('Não foi possível converter [STRING] => [INTEGER]');
             }
           },
-          width: size.width * .8,
           dismissable: false,
         );
       },
