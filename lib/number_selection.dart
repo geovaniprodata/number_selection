@@ -186,6 +186,7 @@ class _NumberSelectionState extends State<NumberSelection> with TickerProviderSt
     return GestureDetector(
       onDoubleTap: () async {
         var qtdController = TextEditingController();
+        qtdController.text = _value.toString();
 
         await Awesome.custom(
           context,
