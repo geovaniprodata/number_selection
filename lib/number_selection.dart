@@ -224,7 +224,8 @@ class _NumberSelectionState extends State<NumberSelection> with TickerProviderSt
                               color: Colors.black,
                               fontSize: 14,
                             ),
-                            floatingLabelAlignment: FloatingLabelAlignment.center,
+                            floatingLabelAlignment: FloatingLabelAlignment.start,
+                            contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
                             floatingLabelStyle: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w800,
@@ -233,6 +234,7 @@ class _NumberSelectionState extends State<NumberSelection> with TickerProviderSt
                             filled: true,
                             fillColor: Colors.white,
                             labelText: widget.modalName,
+                            alignLabelWithHint: true,
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                 color: Theme.of(context).primaryColor,
